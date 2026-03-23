@@ -26,6 +26,3 @@ path = "src/main-ui.rs"
 
 [profile.release]
 lto = true
-
-[target.x86_64-pc-windows-gnu]
-rustflags = ["-C", "linker=x86_64-w64-mingw32-gcc"]
