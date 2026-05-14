@@ -13,8 +13,8 @@
 }
 
 @font-face {
-    font-family: "Sixtyfour";
-    src: url("fonts/Sixtyfour/Sixtyfour-Regular-VariableFont_BLED,SCAN.ttf") format('truetype');
+    font-family: "CarterOne";
+    src: url("fonts/Carter_One/CarterOne-Regular.ttf") format('truetype');
 }
 
 html {
@@ -24,8 +24,8 @@ html {
     background-size: cover;
 
     color: #E0E0E0;
-    font-family: "Sixtyfour";
-    font-variation-settings: 'SCAN' 20;
+    font-family: "CarterOne";
+    font-size: 16px;
     text-shadow: 0px 0px 12px #8F38E0;
 }
 
@@ -36,14 +36,6 @@ html {
     box-shadow: 0px 0px 24px #6000E0;
 }
 
-a {
-    color: #8dc0fa;
-    cursor: pointer;
-}
-a:hover {
-    color: #ffafaf;
-    transition: color 0.5s ease;
-}
 
 .versioning {
     color: #FFFFFF;
@@ -51,23 +43,18 @@ a:hover {
 
 input, textarea {
     color: #E0E0E0;
-    font-family: "Sixtyfour";
-    font-variation-settings: 'SCAN' 20;
-
     background-color: #00000080;
-    box-shadow: 0px 0px 12px #e64343;
+    box-shadow: 0px 0px 12px #a6ffde;
 }
 
 button {
     color: #E0E0E0;
-    font-family: "Sixtyfour";
-    font-variation-settings: 'SCAN' 20;
-
     background-color: #00000080;
     box-shadow: 0px 0px 12px #e64343;
 }
 
 .suggestions {
+    color: #E0E0E0;
     background-color: #00000080;
     box-shadow: 0px 0px 12px #f52fc3;
 }
