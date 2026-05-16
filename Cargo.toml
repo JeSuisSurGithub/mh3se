@@ -25,4 +25,7 @@ name = "mh3se-webui"
 path = "src/main-ui.rs"
 
 [profile.release]
+opt-level = 3
 lto = true
+codegen-units = 1
+strip = true
