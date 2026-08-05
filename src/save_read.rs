@@ -3,6 +3,13 @@ use std::io::Read;
 
 use crate::common::*;
 
+fn read_i8(buffer: &[u8; SAVE_SIZE], offset: usize) -> Result<i8, String> {
+    if SAVE_SIZE < offset + 1 {
+        return Err(format!("Cannot read u8 at {:06X}", offset));
+    }
+    Ok(buffer[offset] as i8)
+}
+
 fn read_u8(buffer: &[u8; SAVE_SIZE], offset: usize) -> Result<u8, String> {
     if SAVE_SIZE < offset + 1 {
         return Err(format!("Cannot read u8 at {:06X}", offset));
@@ -87,41 +94,41 @@ impl EquipSlot {
                 let slot_count = read_u8(buffer, offset + 1)?;
                 match slot_count {
                     0 => {
-                        Ok(EquipSlot::ZeroSlotTalisman(ZeroSlotTalisman{
+                        Ok(EquipSlot::Charm0Slot(Charm0Slot{
                             type_id: type_id,
                             slot_count: read_u8(buffer, offset + 1)?,
                             id: read_u16(buffer, offset + 2)?,
-                            skill1_pt: read_u8(buffer, offset + 5)?,
-                            skill2_pt: read_u8(buffer, offset + 4)?,
+                            skill1_pt: read_i8(buffer, offset + 5)?,
+                            skill2_pt: read_i8(buffer, offset + 4)?,
                             skill1_id: read_u16(buffer, offset + 6)?,
                             skill2_id: read_u16(buffer, offset + 8)?,
                         }))
                     },
                     1 => {
-                        Ok(EquipSlot::OneSlotTalisman(OneSlotTalisman{
+                        Ok(EquipSlot::Charm1Slot(Charm1Slot{
                             type_id: type_id,
                             slot_count: read_u8(buffer, offset + 1)?,
                             id: read_u16(buffer, offset + 2)?,
-                            skill1_pt: read_u8(buffer, offset + 5)?,
-                            skill2_pt: read_u8(buffer, offset + 4)?,
+                            skill1_pt: read_i8(buffer, offset + 5)?,
+                            skill2_pt: read_i8(buffer, offset + 4)?,
                             deco1: read_u16(buffer, offset + 6)?,
                             skill1_id: read_u16(buffer, offset + 8)?,
                             skill2_id: read_u16(buffer, offset + 10)?,
                         }))
                     },
                     2 => {
-                        Ok(EquipSlot::TwoSlotTalisman(TwoSlotTalisman{
+                        Ok(EquipSlot::Charm2Slot(Charm2Slot{
                             type_id: type_id,
                             slot_count: read_u8(buffer, offset + 1)?,
                             id: read_u16(buffer, offset + 2)?,
-                            skill1_pt: read_u8(buffer, offset + 5)?,
+                            skill1_pt: read_i8(buffer, offset + 5)?,
                             deco1: read_u16(buffer, offset + 6)?,
                             deco2: read_u16(buffer, offset + 8)?,
                             skill1_id: read_u16(buffer, offset + 10)?,
                         }))
                     },
                     3 => {
-                        Ok(EquipSlot::ThreeSlotTalisman(ThreeSlotTalisman{
+                        Ok(EquipSlot::Charm3Slot(Charm3Slot{
                             type_id: type_id,
                             slot_count: read_u8(buffer, offset + 1)?,
                             id: read_u16(buffer, offset + 2)?,

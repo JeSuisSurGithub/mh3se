@@ -108,38 +108,38 @@ pub struct Armor {
     pub deco3: u16,
 }
 #[derive(Clone, Copy, Serialize, Deserialize)]
-pub struct ZeroSlotTalisman {
+pub struct Charm0Slot {
     pub type_id: u8,
     pub slot_count: u8,
     pub id: u16,
-    pub skill1_pt: u8,
-    pub skill2_pt: u8,
+    pub skill1_pt: i8,
+    pub skill2_pt: i8,
     pub skill1_id: u16,
     pub skill2_id: u16,
 }
 #[derive(Clone, Copy, Serialize, Deserialize)]
-pub struct OneSlotTalisman {
+pub struct Charm1Slot {
     pub type_id: u8,
     pub slot_count: u8,
     pub id: u16,
-    pub skill1_pt: u8,
-    pub skill2_pt: u8,
+    pub skill1_pt: i8,
+    pub skill2_pt: i8,
     pub deco1: u16,
     pub skill1_id: u16,
     pub skill2_id: u16,
 }
 #[derive(Clone, Copy, Serialize, Deserialize)]
-pub struct TwoSlotTalisman {
+pub struct Charm2Slot {
     pub type_id: u8,
     pub slot_count: u8,
     pub id: u16,
-    pub skill1_pt: u8,
+    pub skill1_pt: i8,
     pub deco1: u16,
     pub deco2: u16,
     pub skill1_id: u16,
 }
 #[derive(Clone, Copy, Serialize, Deserialize)]
-pub struct ThreeSlotTalisman {
+pub struct Charm3Slot {
     pub type_id: u8,
     pub slot_count: u8,
     pub id: u16,
@@ -154,10 +154,10 @@ pub enum EquipSlot {
     MeleeWeapon(MeleeWeapon),
     RangedWeapon(RangedWeapon),
     Armor(Armor),
-    ZeroSlotTalisman(ZeroSlotTalisman),
-    OneSlotTalisman(OneSlotTalisman),
-    TwoSlotTalisman(TwoSlotTalisman),
-    ThreeSlotTalisman(ThreeSlotTalisman),
+    Charm0Slot(Charm0Slot),
+    Charm1Slot(Charm1Slot),
+    Charm2Slot(Charm2Slot),
+    Charm3Slot(Charm3Slot),
 }
 
 /* ---------------------------------------- Character Slot ---------------------------------------- */

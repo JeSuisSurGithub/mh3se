@@ -19,6 +19,19 @@ const idToType = [
     "sa",
 ];
 
+function wrapInt8(x) {
+  x &= 0xFF;
+  return x >= 0x80 ? x - 0x100 : x;
+}
+
+function wrapAdd8(a, b) {
+  return wrapInt8(a + b);
+}
+
+function wrapSub8(a, b) {
+  return wrapInt8(a - b);
+}
+
 function rgbToHex(r, g, b) {
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
 }
@@ -31,158 +44,63 @@ function hexToRgb(hex) {
     return [r, g, b];
 }
 
-function clamp(val, min, max) {
-    return Math.min(Math.max(val, min), max)
+function getRowMeta(target) {
+    const row = target.parentElement.parentElement;
+    const [optName, index] = row.id.split("_slot");
+    return { row, optName, index };
+}
+
+function dispatchInputEvent(rowId) {
+    const event = new Event('input', { bubbles: true, cancelable: true });
+    document.getElementById(rowId).dispatchEvent(event);
 }
 
 function onTypeChange(target) {
-    const row = target.parentElement.parentElement;
-
+    const { row, optName, index } = getRowMeta(target);
     let typeId = Database.type.indexOf(target.value);
-    let optName = row.id.split("_slot")[0];
-    let index = row.id.split("_slot")[1];
+
+    let generator = generateBlankEquipSlot;
+    let payload = { BlankEquipSlot: { buf: [0,0,0,0,0,0,0,0,0,0,0,0] } };
+
     if ((typeId >= 7 && typeId <= 10) || (typeId >= 14 && typeId <= 15)) {
-        row.replaceWith(generateMeleeWeapon({
-            MeleeWeapon: {
-                type_id: typeId,
-                unused_lvl: 0,
-                id: 0,
-                unused_skill2_pt: 0,
-                unused_skill1_pt: 0,
-                deco1: 0,
-                deco2: 0,
-                deco3: 0
-            }
-        }, optName, index));
-    }
-    else if (typeId >= 11 && typeId <= 13) {
-        row.replaceWith(generateRangedWeapon({
-            RangedWeapon: {
-                type_id: typeId,
-                lvl: 0,
-                id: 0,
-                unused_skill2_pt: 0,
-                unused_skill1_pt: 0,
-                deco1: 0,
-                deco2: 0,
-                deco3: 0
-            }
-        }, optName, index));
-    }
-    else if (typeId >= 1 && typeId <= 5) {
-        row.replaceWith(generateArmor({
-            Armor: {
-                type_id: typeId,
-                lvl: 0,
-                id: 0,
-                unused_skill2_pt: 0,
-                unused_skill1_pt: 0,
-                deco1: 0,
-                deco2: 0,
-                deco3: 0
-            }
-        }, optName, index));
-    }
-    else if (typeId === 6) {
-        row.replaceWith(generateOneSlotTalisman({
-            OneSlotTalisman: {
-                type_id: 6,
-                slot_count: 1,
-                id: 0,
-                skill2_pt: 0,
-                skill1_pt: 0,
-                deco1: 0,
-                skill1_id: 0,
-                skill2_id: 0
-            }
-        }, optName, index));
-    }
-    else {
-        row.replaceWith(generateBlankEquipSlot({
-            BlankEquipSlot: {
-                buf: [0,0,0,0,0,0,0,0,0,0,0,0]
-            }
-        }, optName, index));
+        generator = generateMeleeWeapon;
+        payload = { MeleeWeapon: { type_id: typeId, unused_lvl: 0, id: 0, unused_skill2_pt: 0, unused_skill1_pt: 0, deco1: 0, deco2: 0, deco3: 0 } };
+    } else if (typeId >= 11 && typeId <= 13) {
+        generator = generateRangedWeapon;
+        payload = { RangedWeapon: { type_id: typeId, lvl: 0, id: 0, unused_skill2_pt: 0, unused_skill1_pt: 0, deco1: 0, deco2: 0, deco3: 0 } };
+    } else if (typeId >= 1 && typeId <= 5) {
+        generator = generateArmor;
+        payload = { Armor: { type_id: typeId, lvl: 0, id: 0, unused_skill2_pt: 0, unused_skill1_pt: 0, deco1: 0, deco2: 0, deco3: 0 } };
+    } else if (typeId === 6) {
+        generator = generateCharm1Slot;
+        payload = { Charm1Slot: { type_id: 6, slot_count: 1, id: 0, skill2_pt: 0, skill1_pt: 0, deco1: 0, skill1_id: 0, skill2_id: 0 } };
     }
 
-    const event = new Event('input', {
-        bubbles: true,
-        cancelable: true
-    });
-    document.getElementById(row.id).dispatchEvent(event);
+    row.replaceWith(generator(payload, optName, index));
+    dispatchInputEvent(row.id);
 }
 
 function onSlotCountChange(target) {
-    const row = target.parentElement.parentElement;
-
+    const { row, optName, index } = getRowMeta(target);
     let slotCount = parseInt(target.value);
-    let optName = row.id.split("_slot")[0];
-    let index = row.id.split("_slot")[1];
-    if (slotCount === 0) {
-        row.replaceWith(generateZeroSlotTalisman({
-            ZeroSlotTalisman: {
-                type_id: 6,
-                slot_count: 0,
-                id: 0,
-                skill2_pt: 0,
-                skill1_pt: 0,
-                skill1_id: 0,
-                skill2_id: 0,
-                unused_deco3: 0
-            }
-        }, optName, index));
-    }
-    else if (slotCount === 1) {
-        row.replaceWith(generateOneSlotTalisman({
-            OneSlotTalisman: {
-                type_id: 6,
-                slot_count: 1,
-                id: 0,
-                skill2_pt: 0,
-                skill1_pt: 0,
-                deco1: 0,
-                skill1_id: 0,
-                skill2_id: 0
-            }
-        }, optName, index));
-    }
-    else if (slotCount === 2) {
-        row.replaceWith(generateTwoSlotTalisman({
-            TwoSlotTalisman: {
-                type_id: 6,
-                slot_count: 2,
-                id: 0,
-                unused_skill2_pt: 0,
-                skill1_pt: 0,
-                deco1: 0,
-                deco2: 0,
-                skill1_id: 0
-            }
-        }, optName, index));
-    }
-    else if (slotCount === 3) {
-        row.replaceWith(generateThreeSlotTalisman({
-            ThreeSlotTalisman: {
-                type_id: 6,
-                slot_count: 3,
-                id: 0,
-                unused_skill2_pt: 0,
-                unused_skill1_pt: 0,
-                deco1: 0,
-                deco2: 0,
-                deco3: 0
-            }
-        }, optName, index));
-    }
-    else {
+
+    const charmGenerators = [generateCharm0Slot, generateCharm1Slot, generateCharm2Slot, generateCharm3Slot];
+    const generator = charmGenerators[slotCount];
+
+    if (generator) {
+        const key = `Charm${slotCount}Slot`;
+        // Setup initial default templates dynamically based on chosen slot configurations
+        const templates = [
+            { type_id: 6, slot_count: 0, id: 0, skill2_pt: 0, skill1_pt: 0, skill1_id: 0, skill2_id: 0, unused_deco3: 0 },
+            { type_id: 6, slot_count: 1, id: 0, skill2_pt: 0, skill1_pt: 0, deco1: 0, skill1_id: 0, skill2_id: 0 },
+            { type_id: 6, slot_count: 2, id: 0, unused_skill2_pt: 0, skill1_pt: 0, deco1: 0, deco2: 0, skill1_id: 0 },
+            { type_id: 6, slot_count: 3, id: 0, unused_skill2_pt: 0, unused_skill1_pt: 0, deco1: 0, deco2: 0, deco3: 0 }
+        ];
+        row.replaceWith(generator({ [key]: templates[slotCount] }, optName, index));
+    } else {
         console.log("Something's wrong!");
     }
-
-    const event = new Event('input', {
-        bubbles: true,
-        cancelable: true
-    });
-    document.getElementById(row.id).dispatchEvent(event);
+    dispatchInputEvent(row.id);
 }
 
 function generateBlankCell()
@@ -267,10 +185,10 @@ function generateBlankEquipSlot(item, optName, index) {
     return row;
 }
 
-function generateOneSlotTalisman(item, optName, index) {
-    let slotCount = item.OneSlotTalisman.slot_count;
-    let skill1Pt = item.OneSlotTalisman.skill1_pt;
-    let skill2Pt = item.OneSlotTalisman.skill2_pt;
+function generateCharm1Slot(item, optName, index) {
+    let slotCount = item.Charm1Slot.slot_count;
+    let skill1Pt = item.Charm1Slot.skill1_pt;
+    let skill2Pt = item.Charm1Slot.skill2_pt;
 
     const row = document.createElement("tr");
     row.id = `${optName}_slot${index}`;
@@ -286,12 +204,12 @@ function generateOneSlotTalisman(item, optName, index) {
         }
 
         SaveSlot.equip_box[index] = {
-            OneSlotTalisman: {
+            Charm1Slot: {
                 type_id: Database.type.indexOf(row.childNodes[0].childNodes[0].value),
                 slot_count: 1,
-                id: Database[idToType[[item.OneSlotTalisman.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
-                skill2_pt: clamp(10 + parseInt(row.childNodes[4].childNodes[0].value), 0, 255),
-                skill1_pt: clamp(10 + parseInt(row.childNodes[3].childNodes[0].value), 0, 255),
+                id: Database[idToType[[item.Charm1Slot.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
+                skill2_pt: wrapAdd8(parseInt(row.childNodes[4].childNodes[0].value), 10),
+                skill1_pt: wrapAdd8(parseInt(row.childNodes[3].childNodes[0].value), 10),
                 deco1: Database.jewel.indexOf(row.childNodes[5].childNodes[0].value),
                 skill1_id: Database.skill.indexOf(row.childNodes[6].childNodes[0].value),
                 skill2_id: Database.skill.indexOf(row.childNodes[7].childNodes[0].value)
@@ -299,22 +217,22 @@ function generateOneSlotTalisman(item, optName, index) {
         };
     };
 
-    row.appendChild(generateSelectCell(Database.type, item.OneSlotTalisman.type_id));
+    row.appendChild(generateSelectCell(Database.type, item.Charm1Slot.type_id));
     row.appendChild(generateIntSelectCell(slotCount, 0, 3));
-    row.appendChild(generateSelectCell(Database[idToType[[item.OneSlotTalisman.type_id]]], item.OneSlotTalisman.id));
-    row.appendChild(generateIntSelectCell(skill1Pt - 10, -10, 245));
-    row.appendChild(generateIntSelectCell(skill2Pt - 10, -10, 245));
-    row.appendChild(generateSelectCell(Database.jewel, item.OneSlotTalisman.deco1));
-    row.appendChild(generateSelectCell(Database.skill, item.OneSlotTalisman.skill1_id));
-    row.appendChild(generateSelectCell(Database.skill, item.OneSlotTalisman.skill2_id));
+    row.appendChild(generateSelectCell(Database[idToType[[item.Charm1Slot.type_id]]], item.Charm1Slot.id));
+    row.appendChild(generateIntSelectCell(wrapSub8(skill1Pt, 10), -128, 127));
+    row.appendChild(generateIntSelectCell(wrapSub8(skill2Pt, 10), -128, 127));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm1Slot.deco1));
+    row.appendChild(generateSelectCell(Database.skill, item.Charm1Slot.skill1_id));
+    row.appendChild(generateSelectCell(Database.skill, item.Charm1Slot.skill2_id));
 
     return row;
 }
 
-function generateZeroSlotTalisman(item, optName, index) {
-    let slotCount = item.ZeroSlotTalisman.slot_count;
-    let skill1Pt = item.ZeroSlotTalisman.skill1_pt;
-    let skill2Pt = item.ZeroSlotTalisman.skill2_pt;
+function generateCharm0Slot(item, optName, index) {
+    let slotCount = item.Charm0Slot.slot_count;
+    let skill1Pt = item.Charm0Slot.skill1_pt;
+    let skill2Pt = item.Charm0Slot.skill2_pt;
 
     const row = document.createElement("tr");
     row.id = `${optName}_slot${index}`;
@@ -330,12 +248,12 @@ function generateZeroSlotTalisman(item, optName, index) {
         }
 
         SaveSlot.equip_box[index] = {
-            ZeroSlotTalisman: {
+            Charm0Slot: {
                 type_id: Database.type.indexOf(row.childNodes[0].childNodes[0].value),
                 slot_count: 0,
-                id: Database[idToType[[item.ZeroSlotTalisman.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
-                skill2_pt: clamp(10 + parseInt(row.childNodes[4].childNodes[0].value), 0, 255),
-                skill1_pt: clamp(10 + parseInt(row.childNodes[3].childNodes[0].value), 0, 255),
+                id: Database[idToType[[item.Charm0Slot.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
+                skill2_pt: wrapAdd8(parseInt(row.childNodes[4].childNodes[0].value), 10),
+                skill1_pt: wrapAdd8(parseInt(row.childNodes[3].childNodes[0].value), 10),
                 skill1_id: Database.skill.indexOf(row.childNodes[5].childNodes[0].value),
                 skill2_id: Database.skill.indexOf(row.childNodes[6].childNodes[0].value),
                 unused_deco3: 0
@@ -343,21 +261,21 @@ function generateZeroSlotTalisman(item, optName, index) {
         };
     };
 
-    row.appendChild(generateSelectCell(Database.type, item.ZeroSlotTalisman.type_id));
+    row.appendChild(generateSelectCell(Database.type, item.Charm0Slot.type_id));
     row.appendChild(generateIntSelectCell(slotCount, 0, 3));
-    row.appendChild(generateSelectCell(Database[idToType[[item.ZeroSlotTalisman.type_id]]], item.ZeroSlotTalisman.id));
-    row.appendChild(generateIntSelectCell(skill1Pt - 10, -10, 245));
-    row.appendChild(generateIntSelectCell(skill2Pt - 10, -10, 245));
-    row.appendChild(generateSelectCell(Database.skill, item.ZeroSlotTalisman.skill1_id));
-    row.appendChild(generateSelectCell(Database.skill, item.ZeroSlotTalisman.skill2_id));
+    row.appendChild(generateSelectCell(Database[idToType[[item.Charm0Slot.type_id]]], item.Charm0Slot.id));
+    row.appendChild(generateIntSelectCell(wrapSub8(skill1Pt, 10), -128, 127));
+    row.appendChild(generateIntSelectCell(wrapSub8(skill2Pt, 10), -128, 127));
+    row.appendChild(generateSelectCell(Database.skill, item.Charm0Slot.skill1_id));
+    row.appendChild(generateSelectCell(Database.skill, item.Charm0Slot.skill2_id));
     row.appendChild(generateBlankCell());
 
     return row;
 }
 
-function generateTwoSlotTalisman(item, optName, index) {
-    let slotCount = item.TwoSlotTalisman.slot_count;
-    let skill1Pt = item.TwoSlotTalisman.skill1_pt;
+function generateCharm2Slot(item, optName, index) {
+    let slotCount = item.Charm2Slot.slot_count;
+    let skill1Pt = item.Charm2Slot.skill1_pt;
 
     const row = document.createElement("tr");
     row.id = `${optName}_slot${index}`;
@@ -373,12 +291,12 @@ function generateTwoSlotTalisman(item, optName, index) {
         }
 
         SaveSlot.equip_box[index] = {
-            TwoSlotTalisman: {
+            Charm2Slot: {
                 type_id: Database.type.indexOf(row.childNodes[0].childNodes[0].value),
                 slot_count: 2,
-                id: Database[idToType[[item.TwoSlotTalisman.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
+                id: Database[idToType[[item.Charm2Slot.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
                 unused_skill2_pt: 0,
-                skill1_pt: clamp(10 + parseInt(row.childNodes[3].childNodes[0].value), 0, 255),
+                skill1_pt: wrapAdd8(parseInt(row.childNodes[3].childNodes[0].value), 10),
                 deco1: Database.jewel.indexOf(row.childNodes[5].childNodes[0].value),
                 deco2: Database.jewel.indexOf(row.childNodes[6].childNodes[0].value),
                 skill1_id: Database.skill.indexOf(row.childNodes[7].childNodes[0].value)
@@ -386,20 +304,20 @@ function generateTwoSlotTalisman(item, optName, index) {
         };
     };
 
-    row.appendChild(generateSelectCell(Database.type, item.TwoSlotTalisman.type_id));
+    row.appendChild(generateSelectCell(Database.type, item.Charm2Slot.type_id));
     row.appendChild(generateIntSelectCell(slotCount, 0, 3));
-    row.appendChild(generateSelectCell(Database[idToType[[item.TwoSlotTalisman.type_id]]], item.TwoSlotTalisman.id));
-    row.appendChild(generateIntSelectCell(skill1Pt - 10, -10, 245));
+    row.appendChild(generateSelectCell(Database[idToType[[item.Charm2Slot.type_id]]], item.Charm2Slot.id));
+    row.appendChild(generateIntSelectCell(wrapSub8(skill1Pt, 10), -128, 127));
     row.appendChild(generateBlankCell());
-    row.appendChild(generateSelectCell(Database.jewel, item.TwoSlotTalisman.deco1));
-    row.appendChild(generateSelectCell(Database.jewel, item.TwoSlotTalisman.deco2));
-    row.appendChild(generateSelectCell(Database.skill, item.TwoSlotTalisman.skill1_id));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm2Slot.deco1));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm2Slot.deco2));
+    row.appendChild(generateSelectCell(Database.skill, item.Charm2Slot.skill1_id));
 
     return row;
 }
 
-function generateThreeSlotTalisman(item, optName, index) {
-    let slotCount = item.ThreeSlotTalisman.slot_count;
+function generateCharm3Slot(item, optName, index) {
+    let slotCount = item.Charm3Slot.slot_count;
 
     const row = document.createElement("tr");
     row.id = `${optName}_slot${index}`;
@@ -415,10 +333,10 @@ function generateThreeSlotTalisman(item, optName, index) {
         }
 
         SaveSlot.equip_box[index] = {
-            ThreeSlotTalisman: {
+            Charm3Slot: {
                 type_id: Database.type.indexOf(row.childNodes[0].childNodes[0].value),
                 slot_count: 3,
-                id: Database[idToType[[item.ThreeSlotTalisman.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
+                id: Database[idToType[[item.Charm3Slot.type_id]]].indexOf(row.childNodes[2].childNodes[0].value),
                 unused_skill2_pt: 0,
                 unused_skill1_pt: 0,
                 deco1: Database.jewel.indexOf(row.childNodes[5].childNodes[0].value),
@@ -428,14 +346,14 @@ function generateThreeSlotTalisman(item, optName, index) {
         };
     };
 
-    row.appendChild(generateSelectCell(Database.type, item.ThreeSlotTalisman.type_id));
+    row.appendChild(generateSelectCell(Database.type, item.Charm3Slot.type_id));
     row.appendChild(generateIntSelectCell(slotCount, 0, 3));
-    row.appendChild(generateSelectCell(Database[idToType[[item.ThreeSlotTalisman.type_id]]], item.ThreeSlotTalisman.id));
+    row.appendChild(generateSelectCell(Database[idToType[[item.Charm3Slot.type_id]]], item.Charm3Slot.id));
     row.appendChild(generateBlankCell());
     row.appendChild(generateBlankCell());
-    row.appendChild(generateSelectCell(Database.jewel, item.ThreeSlotTalisman.deco1));
-    row.appendChild(generateSelectCell(Database.jewel, item.ThreeSlotTalisman.deco2));
-    row.appendChild(generateSelectCell(Database.jewel, item.ThreeSlotTalisman.deco3));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm3Slot.deco1));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm3Slot.deco2));
+    row.appendChild(generateSelectCell(Database.jewel, item.Charm3Slot.deco3));
 
     return row;
 }
@@ -584,17 +502,17 @@ function generateEquipBox(optName, optData) {
         } else if (item.hasOwnProperty('Armor')) {
             tbody.appendChild(generateArmor(item, optName, index));
 
-        } else if (item.hasOwnProperty('ZeroSlotTalisman')) {
-            tbody.appendChild(generateZeroSlotTalisman(item, optName, index));
+        } else if (item.hasOwnProperty('Charm0Slot')) {
+            tbody.appendChild(generateCharm0Slot(item, optName, index));
 
-        } else if (item.hasOwnProperty('OneSlotTalisman')) {
-            tbody.appendChild(generateOneSlotTalisman(item, optName, index));
+        } else if (item.hasOwnProperty('Charm1Slot')) {
+            tbody.appendChild(generateCharm1Slot(item, optName, index));
 
-        } else if (item.hasOwnProperty('TwoSlotTalisman')) {
-            tbody.appendChild(generateTwoSlotTalisman(item, optName, index));
+        } else if (item.hasOwnProperty('Charm2Slot')) {
+            tbody.appendChild(generateCharm2Slot(item, optName, index));
 
-        } else if (item.hasOwnProperty('ThreeSlotTalisman')) {
-            tbody.appendChild(generateThreeSlotTalisman(item, optName, index));
+        } else if (item.hasOwnProperty('Charm3Slot')) {
+            tbody.appendChild(generateCharm3Slot(item, optName, index));
 
         } else if (item.hasOwnProperty('BlankEquipSlot')) {
             tbody.appendChild(generateBlankEquipSlot(item, optName, index));

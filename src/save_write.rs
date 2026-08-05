@@ -4,6 +4,14 @@ use std::ptr;
 
 use crate::common::*;
 
+fn write_i8(buffer: &mut [u8; SAVE_SIZE], offset: usize, value: i8) -> Result<(), String> {
+    if SAVE_SIZE < offset + 1 {
+        return Err(format!("Cannot write u8 at {:06X}", offset));
+    }
+    buffer[offset] = value as u8;
+    Ok(())
+}
+
 fn write_u8(buffer: &mut [u8; SAVE_SIZE], offset: usize, value: u8) -> Result<(), String> {
     if SAVE_SIZE < offset + 1 {
         return Err(format!("Cannot write u8 at {:06X}", offset));
@@ -72,35 +80,35 @@ fn write_equip_slot(buffer: &mut [u8; SAVE_SIZE], offset: usize, value: EquipSlo
                 write_u16(buffer, offset + 8, raw.deco2)?;
                 write_u16(buffer, offset + 10, raw.deco3)?;
             },
-            EquipSlot::ZeroSlotTalisman(raw) => {
+            EquipSlot::Charm0Slot(raw) => {
                 write_u8(buffer, offset, raw.type_id)?;
                 write_u8(buffer, offset + 1, raw.slot_count)?;
                 write_u16(buffer, offset + 2, raw.id)?;
-                write_u8(buffer, offset + 5, raw.skill1_pt)?;
-                write_u8(buffer, offset + 4, raw.skill2_pt)?;
+                write_i8(buffer, offset + 5, raw.skill1_pt)?;
+                write_i8(buffer, offset + 4, raw.skill2_pt)?;
                 write_u16(buffer, offset + 6, raw.skill1_id)?;
                 write_u16(buffer, offset + 8, raw.skill2_id)?;
             },
-            EquipSlot::OneSlotTalisman(raw) => {
+            EquipSlot::Charm1Slot(raw) => {
                 write_u8(buffer, offset, raw.type_id)?;
                 write_u8(buffer, offset + 1, raw.slot_count)?;
                 write_u16(buffer, offset + 2, raw.id)?;
-                write_u8(buffer, offset + 5, raw.skill1_pt)?;
-                write_u8(buffer, offset + 4, raw.skill2_pt)?;
+                write_i8(buffer, offset + 5, raw.skill1_pt)?;
+                write_i8(buffer, offset + 4, raw.skill2_pt)?;
                 write_u16(buffer, offset + 6, raw.deco1)?;
                 write_u16(buffer, offset + 8, raw.skill1_id)?;
                 write_u16(buffer, offset + 10, raw.skill2_id)?;
             },
-            EquipSlot::TwoSlotTalisman(raw) => {
+            EquipSlot::Charm2Slot(raw) => {
                 write_u8(buffer, offset, raw.type_id)?;
                 write_u8(buffer, offset + 1, raw.slot_count)?;
                 write_u16(buffer, offset + 2, raw.id)?;
-                write_u8(buffer, offset + 5, raw.skill1_pt)?;
+                write_i8(buffer, offset + 5, raw.skill1_pt)?;
                 write_u16(buffer, offset + 6, raw.deco1)?;
                 write_u16(buffer, offset + 8, raw.deco2)?;
                 write_u16(buffer, offset + 10, raw.skill1_id)?;
             },
-            EquipSlot::ThreeSlotTalisman(raw) => {
+            EquipSlot::Charm3Slot(raw) => {
                 write_u8(buffer, offset, raw.type_id)?;
                 write_u8(buffer, offset + 1, raw.slot_count)?;
                 write_u16(buffer, offset + 2, raw.id)?;
