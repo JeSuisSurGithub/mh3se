@@ -763,7 +763,7 @@
       "King Talisman",
       "Dragon Talisman"
     ],
-    "barrel": [
+    "stock": [
       "No Equipment",
       "Light Bowgun",
       "Medium Bowgun",
@@ -1948,7 +1948,7 @@
       "Dung Jewel",
       "Torchlight Jewel"
     ],
-    "stock": [
+    "barrel": [
       "No Equipment",
       "Light Bowgun",
       "Medium Bowgun",
