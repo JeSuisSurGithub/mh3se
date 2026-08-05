@@ -3,8 +3,8 @@
 rm mh3se-release.zip
 mkdir ./mh3se-release
 
-CARGO_BIN_NAME=mh3se-cli cargo build --bin mh3se-cli --release --target x86_64-pc-windows-gnu
-CARGO_BIN_NAME=mh3se-webui cargo build --bin mh3se-webui --release --target x86_64-pc-windows-gnu
+BUILD_INST=cli cargo build --bin mh3se-cli --release --target x86_64-pc-windows-gnu
+BUILD_INST=webui cargo build --bin mh3se-webui --release --target x86_64-pc-windows-gnu
 cp ./target/x86_64-pc-windows-gnu/release/mh3se-cli.exe ./mh3se-release/mh3se-cli.exe
 cp ./target/x86_64-pc-windows-gnu/release/mh3se-webui.exe ./mh3se-release/mh3se-webui.exe
 
