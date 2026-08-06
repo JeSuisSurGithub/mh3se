@@ -61,3 +61,6 @@ And the ID Database was formed thanks to [this database](https://github.com/sepa
 [Font used on mh3se-webui according to OFL terms](https://fonts.google.com/specimen/Carter+One)
 
 [Credits for the background image used on mh3se-webui](https://esawebb.org/images/weic2330a/)
+
+## Gallery
+![webui.avif](/webui.avif)
