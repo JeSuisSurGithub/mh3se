@@ -14,7 +14,7 @@ Please be careful with your saves ALWAYS KEEP A BACKUP.
 + All character customization characteristics: voice, skin tone etc...
 * Blademaster and Gunner Pouches
 + Item Box
-* Equipment Box, (including creating crazy cheat +127 skill talismans, though i'd advise to not use them online with strangers)
+* Equipment Box, (including creating crazy cheat +127 skill pts talismans, though i'd advise to not use them online with strangers)
 
 ## Quick guide
 
