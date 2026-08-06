@@ -54,7 +54,7 @@ Enjoy your new save file!
 
 ## Credits
 
-A significant part of the reverse engineering work was based off [this information](https://github.com/sepalani/MHTrIDA/tree/master/save)
+Most of the reverse engineering work was based off [this information](https://github.com/sepalani/MHTrIDA/tree/master/save)
 
 And the ID Database was formed thanks to [this database](https://github.com/sepalani/MH3DB)
 
