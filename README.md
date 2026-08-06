@@ -14,7 +14,7 @@ Please be careful with your saves ALWAYS KEEP A BACKUP.
 + All character customization characteristics: voice, skin tone etc...
 * Blademaster and Gunner Pouches
 + Item Box
-* Equipment Box, including creating custom **illegal** talismans
+* Equipment Box, (including creating crazy cheat +127 skill talismans, though i'd advise to not use them online with strangers)
 
 ## Quick guide
 
@@ -46,7 +46,7 @@ If it has successfully loaded you can now edit it according to your liking
 
 Once you're done go under the "Build New Save File" section, select preferrably your original save file and corresponding save slot and build it!
 
-Hopefully no bugs happened and it show prompt you to download data00 the save file you gave but with the modifications injected in it.
+Hopefully no bugs happened and it will prompt you to download data00 the save file you gave but with the modifications injected in it.
 
 Now you can just close the browser tab and the mh3se-webui.exe tool window.
 
