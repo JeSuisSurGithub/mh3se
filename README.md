@@ -52,15 +52,29 @@ Now you can just close the browser tab and the mh3se-webui.exe tool window.
 
 Enjoy your new save file!
 
+## Gallery
+![webui.avif](/webui.avif)
+
 ## Credits
 
-Most of the reverse engineering work was based off [this information](https://github.com/sepalani/MHTrIDA/tree/master/save)
+Most of the reverse engineering work was based off [this work](https://github.com/sepalani/MHTrIDA/tree/master/save)
 
-And the ID Database was formed thanks to [this database](https://github.com/sepalani/MH3DB)
+And the ID Database transformed from [this database](https://github.com/sepalani/MH3DB)
 
 [Font used on mh3se-webui according to OFL terms](https://fonts.google.com/specimen/Carter+One)
 
-[Credits for the background image used on mh3se-webui](https://esawebb.org/images/weic2330a/)
+## License
+Copyright (C) 2026 JeSuisSur
 
-## Gallery
-![webui.avif](/webui.avif)
+Unless otherwise stated, original code authored by the project contributors is
+licensed under the GNU Affero General Public License, version 3 or any
+later version (AGPL-3.0-or-later).
+
+This repository also contains third-party software, data, generated
+files, and other materials that are subject to their respective
+copyrights and license terms. Such materials are not relicensed under
+the AGPL by inclusion in this repository.
+
+The applicable license and attribution information for third-party
+materials is retained with those materials where provided and/or
+documented in the corresponding directories and files.
